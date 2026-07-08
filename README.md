@@ -2,7 +2,7 @@
 
 ## Description
 
-This project is a simple calculator web application built using FastAPI. It performs basic arithmetic operations through API endpoints. The project also includes unit tests, integration tests, end-to-end tests using Playwright, logging, and GitHub Actions for continuous integration.
+This project is a simple calculator web application built using FastAPI. It performs basic arithmetic operations through API endpoints. The project also includes unit tests, integration tests, end-to-end tests using Playwright, logging, GitHub Actions for continuous integration, and Docker support with PostgreSQL and pgAdmin.
 
 ## Features
 
@@ -15,6 +15,9 @@ This project is a simple calculator web application built using FastAPI. It perf
 * End-to-end tests with Playwright
 * Logging
 * GitHub Actions workflow
+* Docker Compose support
+* PostgreSQL database
+* pgAdmin for database management
 
 ## How to Run the Application
 
@@ -44,6 +47,30 @@ uvicorn app.main:app --reload
 http://127.0.0.1:8000/docs
 ```
 
+## Running with Docker
+
+To run the project using Docker Compose:
+
+```bash
+docker-compose up --build
+```
+
+After the containers start:
+
+**FastAPI**
+
+```text
+http://localhost:8000
+```
+
+**pgAdmin**
+
+```text
+http://localhost:5050
+```
+
+PostgreSQL will run in a Docker container and can be managed through pgAdmin.
+
 ## Running the Tests
 
 To run all the tests, use:
@@ -56,6 +83,10 @@ pytest
 
 * Python
 * FastAPI
+* PostgreSQL
+* Docker
+* Docker Compose
+* pgAdmin
 * Pytest
 * Playwright
 * Uvicorn
