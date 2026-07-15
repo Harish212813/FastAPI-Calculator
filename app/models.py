@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Integer, String
+from sqlalchemy import Column, DateTime, Float, Integer, String
 
 from app.database import Base
 
@@ -17,3 +17,13 @@ class User(Base):
         default=lambda: datetime.now(timezone.utc),
         nullable=False,
     )
+
+
+class Calculation(Base):
+    __tablename__ = "calculations"
+
+    id = Column(Integer, primary_key=True, index=True)
+    a = Column(Float, nullable=False)
+    b = Column(Float, nullable=False)
+    type = Column(String(20), nullable=False)
+    result = Column(Float, nullable=False)
