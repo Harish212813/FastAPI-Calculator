@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a FastAPI calculator application that has been built throughout the course. It includes calculator endpoints, PostgreSQL database integration, a secure user model using SQLAlchemy, password hashing, Pydantic validation, automated testing, Docker support, and GitHub Actions for CI/CD.
+This project is a FastAPI calculator application that has been built throughout the course. It includes calculator endpoints, PostgreSQL database integration, a secure user model using SQLAlchemy, a Calculation model, password hashing, Pydantic validation, automated testing, Docker support, and GitHub Actions for CI/CD.
 
 ## Features
 
@@ -13,9 +13,12 @@ This project is a FastAPI calculator application that has been built throughout 
   - Divide
 - FastAPI REST API
 - SQLAlchemy User model
+- SQLAlchemy Calculation model
 - PostgreSQL database
 - Password hashing using Passlib
 - Pydantic input validation
+- Calculation validation with Pydantic
+- Calculation Factory pattern
 - Unit and integration tests with Pytest
 - Docker support
 - GitHub Actions CI/CD pipeline
@@ -116,6 +119,48 @@ This project includes:
 - Password hashing tests
 - User validation tests
 - Database testing
+- Calculation factory tests
+- Calculation schema validation tests
+- Calculation model integration tests
 
 All tests are automated using GitHub Actions.
 
+## Module 11: Calculation Model
+
+This project now includes a SQLAlchemy Calculation model with the following fields:
+
+- id
+- a
+- b
+- type
+- result
+
+Pydantic schemas are used to validate calculation input and output. The supported calculation types are Add, Sub, Multiply, and Divide. Division by zero and unsupported calculation types are rejected.
+
+A calculation factory is also included to perform the correct operation based on the selected calculation type.
+
+## Running the Module 11 Tests
+
+Activate the virtual environment:
+
+```bash
+source venv/bin/activate
+```
+
+Install the required packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run all tests:
+
+```bash
+pytest
+```
+
+Run tests with coverage:
+
+```bash
+pytest --cov=app --cov-report=term-missing
+```
