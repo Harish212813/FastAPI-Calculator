@@ -16,6 +16,11 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=8)
 
 
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
+
 class UserRead(BaseModel):
     id: int
     username: str
@@ -33,6 +38,18 @@ class CalculationType(str, Enum):
 
 
 class CalculationCreate(BaseModel):
+    a: float
+    b: float
+    type: CalculationType
+
+    @model_validator(mode="after")
+    def validate_division(self):
+        if self.type == CalculationType.DIVIDE and self.b == 0:
+            raise ValueError("Cannot divide by zero")
+        return self
+
+
+class CalculationUpdate(BaseModel):
     a: float
     b: float
     type: CalculationType
