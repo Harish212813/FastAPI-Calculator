@@ -1,0 +1,50 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+}
+
+.auth-container {
+    width: 360px;
+    margin: 80px auto;
+    padding: 24px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+h1 {
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-top: 12px;
+    margin-bottom: 5px;
+}
+
+input {
+    padding: 10px;
+    font-size: 16px;
+}
+
+button {
+    margin-top: 18px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#message {
+    margin-top: 16px;
+    text-align: center;
+    font-weight: bold;
+}
+
+a {
+    color: #0056b3;
+}

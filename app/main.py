@@ -1,6 +1,8 @@
 import logging
 
 from fastapi import Depends, FastAPI, HTTPException, Response, status
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -11,11 +13,17 @@ from app.schemas import (
     CalculationCreate,
     CalculationRead,
     CalculationUpdate,
+    TokenResponse,
     UserCreate,
+    UserEmailLogin,
     UserLogin,
     UserRead,
 )
-from app.security import hash_password, verify_password
+from app.security import (
+    create_access_token,
+    hash_password,
+    verify_password,
+)
 from app.services.calculation_factory import CalculationFactory
 
 
@@ -23,6 +31,23 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI()
+
+app.mount(
+    "/static",
+    StaticFiles(directory="app/static"),
+    name="static",
+)
+
+@app.get("/register-page", include_in_schema=False)
+def register_page():
+    return FileResponse("app/static/register.html")
+
+
+@app.get("/login-page", include_in_schema=False)
+def login_page():
+    return FileResponse("app/static/login.html")
+
+
 
 
 @app.get("/")
@@ -35,21 +60,33 @@ def home():
 def add_numbers(a: float, b: float):
     result = add(a, b)
     logger.info(f"Add operation: {a} + {b} = {result}")
-    return {"operation": "add", "result": result}
+
+    return {
+        "operation": "add",
+        "result": result,
+    }
 
 
 @app.get("/subtract")
 def subtract_numbers(a: float, b: float):
     result = subtract(a, b)
     logger.info(f"Subtract operation: {a} - {b} = {result}")
-    return {"operation": "subtract", "result": result}
+
+    return {
+        "operation": "subtract",
+        "result": result,
+    }
 
 
 @app.get("/multiply")
 def multiply_numbers(a: float, b: float):
     result = multiply(a, b)
     logger.info(f"Multiply operation: {a} * {b} = {result}")
-    return {"operation": "multiply", "result": result}
+
+    return {
+        "operation": "multiply",
+        "result": result,
+    }
 
 
 @app.get("/divide")
@@ -57,15 +94,22 @@ def divide_numbers(a: float, b: float):
     try:
         result = divide(a, b)
         logger.info(f"Divide operation: {a} / {b} = {result}")
-        return {"operation": "divide", "result": result}
+
+        return {
+            "operation": "divide",
+            "result": result,
+        }
+
     except ValueError:
         logger.error("Division by zero attempted")
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Cannot divide by zero.",
         )
 
 
+# Older Module 12 registration routes
 @app.post(
     "/users/register",
     response_model=UserRead,
@@ -115,17 +159,21 @@ def create_user(
         db.add(new_user)
         db.commit()
         db.refresh(new_user)
+
     except IntegrityError:
         db.rollback()
+
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Username or email already exists.",
         )
 
     logger.info(f"New user created: {new_user.username}")
+
     return new_user
 
 
+# Older Module 12 login route
 @app.post("/users/login")
 def login_user(
     login_data: UserLogin,
@@ -153,6 +201,111 @@ def login_user(
         "user_id": user.id,
         "username": user.username,
     }
+
+
+# New Module 13 JWT registration route
+@app.post(
+    "/register",
+    response_model=TokenResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+def register_with_token(
+    user_data: UserCreate,
+    db: Session = Depends(get_db),
+):
+    existing_user = (
+        db.query(User)
+        .filter(
+            (User.username == user_data.username)
+            | (User.email == user_data.email)
+        )
+        .first()
+    )
+
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or email already exists.",
+        )
+
+    new_user = User(
+        username=user_data.username,
+        email=user_data.email,
+        password_hash=hash_password(user_data.password),
+    )
+
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+
+    except IntegrityError:
+        db.rollback()
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or email already exists.",
+        )
+
+    access_token = create_access_token(
+        data={
+            "sub": str(new_user.id),
+            "username": new_user.username,
+            "email": new_user.email,
+        }
+    )
+
+    logger.info(
+        f"New user registered with JWT: {new_user.username}"
+    )
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "message": "Registration successful.",
+    }
+
+
+# New Module 13 JWT login route
+@app.post(
+    "/login",
+    response_model=TokenResponse,
+)
+def login_with_token(
+    login_data: UserEmailLogin,
+    db: Session = Depends(get_db),
+):
+    user = (
+        db.query(User)
+        .filter(User.email == login_data.email)
+        .first()
+    )
+
+    if not user or not verify_password(
+        login_data.password,
+        user.password_hash,
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password.",
+        )
+
+    access_token = create_access_token(
+        data={
+            "sub": str(user.id),
+            "username": user.username,
+            "email": user.email,
+        }
+    )
+
+    logger.info(f"User logged in with JWT: {user.username}")
+
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "message": "Login successful.",
+    }
+
 
 
 @app.post(

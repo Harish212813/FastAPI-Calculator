@@ -20,6 +20,16 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
+class UserEmailLogin(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    message: str
+
 
 class UserRead(BaseModel):
     id: int

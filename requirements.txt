@@ -34,6 +34,7 @@ pytest-base-url==2.1.0
 pytest-cov==7.1.0
 pytest-playwright==0.8.0
 python-jose==3.5.0
+python-multipart==0.0.32
 python-slugify==8.0.4
 requests==2.34.2
 rsa==4.9.1
