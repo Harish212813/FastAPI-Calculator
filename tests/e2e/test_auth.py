@@ -84,3 +84,34 @@ def test_password_mismatch_validation(page: Page):
     expect(page.locator("#message")).to_have_text(
         "Passwords do not match."
     )
+
+
+def test_wrong_password_login(page: Page):
+    unique_value = uuid.uuid4().hex[:8]
+    username = f"wrongpass_{unique_value}"
+    email = f"wrongpass_{unique_value}@example.com"
+    password = "Password123"
+
+    page.goto(f"{BASE_URL}/register-page")
+
+    page.fill("#username", username)
+    page.fill("#email", email)
+    page.fill("#password", password)
+    page.fill("#confirm-password", password)
+
+    page.click("button[type='submit']")
+
+    expect(page.locator("#message")).to_have_text(
+        "Registration successful."
+    )
+
+    page.goto(f"{BASE_URL}/login-page")
+
+    page.fill("#email", email)
+    page.fill("#password", "WrongPassword123")
+
+    page.click("button[type='submit']")
+
+    expect(page.locator("#message")).to_have_text(
+        "Invalid email or password."
+    )

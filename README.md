@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a FastAPI calculator application that has been built throughout the course. It includes calculator endpoints, PostgreSQL database integration, user authentication, password hashing, calculation CRUD operations, automated testing, Docker support, and GitHub Actions for CI/CD.
+This project is a FastAPI calculator application that has been built throughout the course. It includes calculator endpoints, PostgreSQL database integration, secure user authentication with JWT, client-side login and registration pages, automated testing, Docker support, and GitHub Actions for CI/CD.
 
 ## Features
 
@@ -12,29 +12,30 @@ This project is a FastAPI calculator application that has been built throughout 
   - Multiply
   - Divide
 - FastAPI REST API
-- User registration
-- User login with password verification
-- Calculation CRUD operations
-  - Create
-  - Browse
-  - Read
-  - Update
-  - Delete
-- PostgreSQL database
-- SQLAlchemy ORM
-- Pydantic validation
+- PostgreSQL database with SQLAlchemy
+- User registration and login
 - Password hashing using bcrypt
-- Integration tests with pytest
-- Docker support
-- GitHub Actions CI/CD
-- Docker Hub deployment
+- JWT authentication
+- Client-side validation for registration and login
+- Calculation CRUD (Browse, Read, Edit, Add, Delete)
+- Pydantic request and response validation
+- Unit, integration, and Playwright end-to-end tests
+- Docker and Docker Compose support
+- GitHub Actions CI/CD pipeline
 
-## Requirements
+## Technologies Used
 
-- Python 3.11+
+- Python 3.11
+- FastAPI
 - PostgreSQL
-- Docker Desktop (optional)
-- Git
+- SQLAlchemy
+- Pydantic
+- Passlib (bcrypt)
+- Python-JOSE (JWT)
+- Playwright
+- Pytest
+- Docker
+- GitHub Actions
 
 ## Installation
 
@@ -42,27 +43,26 @@ Clone the repository:
 
 ```bash
 git clone https://github.com/Harish212813/FastAPI-Calculator.git
-```
-
-Go into the project folder:
-
-```bash
 cd FastAPI-Calculator
 ```
 
-Create and activate a virtual environment:
-
-### macOS/Linux
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### Windows
+Create a virtual environment:
 
 ```bash
 python -m venv venv
+```
+
+Activate the virtual environment.
+
+macOS/Linux:
+
+```bash
+source venv/bin/activate
+```
+
+Windows:
+
+```bash
 venv\Scripts\activate
 ```
 
@@ -74,110 +74,87 @@ pip install -r requirements.txt
 
 ## Running the Application
 
-Start the FastAPI server:
+Start the application:
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-Open your browser:
+Open your browser and visit:
 
 ```
 http://127.0.0.1:8000/docs
 ```
 
-Swagger UI can be used to test all API endpoints.
+Swagger UI can be used to test the API endpoints.
+
+The registration and login pages are available at:
+
+```
+http://127.0.0.1:8000/register-page
+```
+
+```
+http://127.0.0.1:8000/login-page
+```
 
 ## Running Tests
 
-Run all tests with:
+Run all tests:
 
 ```bash
 pytest
 ```
 
-The project includes unit tests and integration tests for:
+Run only Playwright tests:
 
-- Calculator operations
-- User registration
-- User login
-- Calculation CRUD endpoints
-- Security
-- Pydantic schemas
-
-## Manual API Testing
-
-After starting the application, open:
-
+```bash
+pytest tests/e2e/test_auth.py --headed
 ```
-http://127.0.0.1:8000/docs
-```
-
-From Swagger you can test:
-
-- POST /users/register
-- POST /users/login
-- POST /calculations
-- GET /calculations
-- GET /calculations/{id}
-- PUT /calculations/{id}
-- DELETE /calculations/{id}
 
 ## Docker
 
 Build the Docker image:
 
 ```bash
-docker build -t fastapi-calculator .
-```
-
-Run the application:
-
-```bash
 docker compose up --build
 ```
 
-## Docker Hub
-
-Docker image:
-
-https://hub.docker.com/r/akhil212813/fastapi-calculator
-
-## GitHub Actions
-
-GitHub Actions automatically:
-
-- Runs all tests
-- Starts a PostgreSQL service for testing
-- Builds the Docker image
-- Pushes the latest image to Docker Hub after successful tests
+The application, PostgreSQL database, and pgAdmin will start using Docker Compose.
 
 ## Project Structure
 
 ```
-fastapi-calculator/
-│
-├── app/
-│   ├── database.py
-│   ├── main.py
-│   ├── models.py
-│   ├── operations.py
-│   ├── schemas.py
-│   ├── security.py
-│   └── services/
-│       └── calculation_factory.py
-│
-├── tests/
-│   ├── test_user_routes.py
-│   ├── test_calculation_routes.py
-│   ├── test_operations.py
-│   ├── test_security.py
-│   ├── test_schemas.py
-│   └── ...
-│
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── README.md
+app/
+├── main.py
+├── models.py
+├── schemas.py
+├── security.py
+├── database.py
+├── services/
+└── static/
+
+tests/
+├── test_main.py
+├── test_users.py
+├── test_security.py
+├── test_schemas.py
+├── test_calculation_model.py
+├── test_calculation_factory.py
+├── test_calculation_schemas.py
+├── test_calculations.py
+└── e2e/
+    └── test_auth.py
 ```
 
+## CI/CD
+
+GitHub Actions automatically:
+
+- Runs all unit, integration, and Playwright tests
+- Builds the Docker image
+- Pushes the Docker image to Docker Hub after successful tests
+
+## Author
+
+Akhil B
